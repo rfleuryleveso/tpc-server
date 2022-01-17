@@ -9,9 +9,10 @@ export class AppEnv {
   private values: AppEnvironmentVariables;
 
   constructor(private appLogger: AppLogger) {
-    const {parsed} = dotenv.config();
+    let {parsed} = dotenv.config();
     if (!parsed) {
-      throw new Error('No environnment variables available');
+      // If no parsed data, create an empty object that will be populated by ajv
+      parsed = {};
     }
 
     // Validate the parsed environment against the env schema.
