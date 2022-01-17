@@ -33,6 +33,7 @@
   "author": "Equipe TPC",
   "license": "Apache-2.0",
   "dependencies": {
+    "dotenv": "^14.1.0",
     "reflect-metadata": "^0.1.13",
     "tslib": "~2.3.1",
     "typedi": "^0.10.0",
