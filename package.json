@@ -1,7 +1,7 @@
 {
-  "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
+  "name": "tpc-server",
+  "version": "0.0.1",
+  "description": "Backend for TPC Application",
   "engines": {
     "node": ">= 17"
   },
@@ -30,12 +30,12 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
-  "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",
+  "author": "Equipe TPC",
   "license": "Apache-2.0",
   "dependencies": {
     "tslib": "~2.3.1"
   },
   "volta": {
-    "node": "16.13.0"
+    "node": "17.0.0"
   }
 }
