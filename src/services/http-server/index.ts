@@ -12,6 +12,11 @@ export class HttpServer {
     this.fastifyInstance = fastify();
   }
 
+  /**
+   * Register a new controller as a fastify plugin
+   * @param controller
+   * @param options
+   */
   public register(controller: FastifyPluginCallback<FastifyPluginOptions>, options: FastifyRegisterOptions<FastifyPluginOptions> = {}) {
     this.fastifyInstance.register(controller, options);
   }

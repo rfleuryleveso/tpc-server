@@ -3,11 +3,11 @@ import {Container, Service} from "typedi";
 import {AppLogger} from './services/logger';
 import {AppEnv} from "./services/env";
 import {HttpServer} from "./services/http-server";
-import statusController from "./rest-api/controllers/status";
+import {RestApi} from "./rest-api/RestApi";
 
 @Service()
 class MainService {
-  constructor(public loggerService: AppLogger, public envService: AppEnv, public httpServer: HttpServer) {
+  constructor(private loggerService: AppLogger, private envService: AppEnv, private httpServer: HttpServer, private restApi: RestApi) {
   }
 
   /**
@@ -15,11 +15,12 @@ class MainService {
    * Starts all services in sequence
    */
   start() {
-    const env = this.envService.get('NODE_ENV')
+    const env = this.envService.get('NODE_ENV');
     this.loggerService.info(`Starting TPC Server, in ${env}`);
-    this.httpServer.register(statusController);
+    this.restApi.registerHttp();
     this.httpServer.start();
   }
+
 }
 
 const mainService = Container.get(MainService);
