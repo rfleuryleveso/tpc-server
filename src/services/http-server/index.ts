@@ -25,12 +25,27 @@ export class HttpServer {
    * Starts the server instance with the port specified in the env (HTTP_PORT)
    * TODO: Fix HTTP_HOST unused. Fastify typings are erroneous
    */
-  public start() {
-    this.fastifyInstance.listen(this.appEnv.get('HTTP_PORT'), (error, address) => {
-      if (error) {
-        this.logger.error('Could not start HTTP Rest Service', {error: error})
-      }
-      this.logger.info(`HTTP Server listening on ${address}`, {address});
-    });
+  public start(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.fastifyInstance.listen(this.appEnv.get('HTTP_PORT'), (error, address) => {
+        if (error) {
+          this.logger.error('Could not start HTTP Rest Service', {error: error})
+          return reject(error);
+        }
+        this.logger.info(`HTTP Server listening on ${address}`, {address});
+        resolve(address);
+      });
+    })
+  }
+
+  /**
+   * Returns the fastify instance used in the application
+   */
+  public getInstance(): FastifyInstance {
+    return this.fastifyInstance;
+  }
+
+  public stop(): Promise<void> {
+    return this.fastifyInstance.close();
   }
 }
