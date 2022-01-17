@@ -1,19 +1,21 @@
 import {Service} from 'typedi';
 import winston, {createLogger, format, transports} from "winston";
+import {AppEnv} from "../env";
 
 @Service()
 export class AppLogger extends (createLogger as unknown as winston.Logger) {
-  constructor() {
-    const configuration: winston.LoggerOptions = {
+  constructor(appEnv: AppEnv) {
+    super({
       level: 'info',
       format: format.json(),
       transports: [
         new transports.File({filename: 'storage/application.log'}),
       ],
-    }
+    })
+
     // If in development, add a coloured output
-    if (process.env.NODE_ENV === 'development') {
-      (configuration.transports as winston.transport[]).push(new transports.Console({
+    if (appEnv.get('NODE_ENV') === 'development') {
+      this.add(new transports.Console({
         format: format.combine(
           format.colorize(),
           format.simple()
@@ -21,6 +23,5 @@ export class AppLogger extends (createLogger as unknown as winston.Logger) {
       }))
     }
 
-    super(configuration)
   }
 }

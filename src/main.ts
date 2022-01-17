@@ -1,10 +1,11 @@
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {AppLogger} from './services/logger';
+import {AppEnv} from "./services/env";
 
 @Service()
 class MainService {
-  constructor(public loggerService: AppLogger) {
+  constructor(public loggerService: AppLogger, public envService: AppEnv) {
   }
 
   /**
@@ -12,7 +13,8 @@ class MainService {
    * Starts all services in sequence
    */
   start() {
-    this.loggerService.info('Starting TPC Server');
+    const env = this.envService.get('NODE_ENV')
+    this.loggerService.info(`Starting TPC Server, in ${env}`);
   }
 }
 

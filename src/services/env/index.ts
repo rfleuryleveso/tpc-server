@@ -1,18 +1,30 @@
 import {Service} from 'typedi';
-import dotenv from 'dotenv'
-import {AppEnvironmentVariables} from "./validation";
+import * as dotenv from 'dotenv'
+import {AppEnvironmentVariables, appEnvironmentVariablesSchema} from "./validation";
+import Ajv from "ajv"
+import {AppLogger} from "../logger";
 
 @Service()
 export class AppEnv {
   private values: AppEnvironmentVariables;
 
-  constructor() {
+  constructor(private appLogger: AppLogger) {
     const {parsed} = dotenv.config();
     if (!parsed) {
       throw new Error('No environnment variables available');
     }
-    // TODO: Add validation to the environnment variables
-    // @ts-expect-error This will lead to an error because there is no validation applied.
+
+    // Validate the parsed environment against the env schema.
+    const validator = new Ajv();
+    const validate = validator.compile(appEnvironmentVariablesSchema);
+    // If there are errors, halt the execution
+    if (!validate(parsed)) {
+      // Print every error, if there are.
+      validate.errors?.forEach((error) => {
+        this.appLogger.error(`Env validation error ${error.schemaPath} ${error.message}`);
+      })
+      throw new Error('Environment loading has failed due to a loading error');
+    }
     this.values = parsed;
   }
 
