@@ -8,6 +8,6 @@ export class RestApi {
   }
 
   registerHttp() {
-    this.httpServer.register(this.statusController.register)
+    this.httpServer.register(this.statusController.register, {prefix: '/status'})
   }
 }
