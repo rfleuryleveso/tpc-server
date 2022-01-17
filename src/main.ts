@@ -1,7 +1,20 @@
 import 'reflect-metadata';
+import {Container, Service} from "typedi";
+import {AppLogger} from './services/logger';
 
-async function main() {
+@Service()
+class MainService {
+  constructor(public loggerService: AppLogger) {
+  }
 
+  /**
+   * Initialize the application.
+   * Starts all services in sequence
+   */
+  start() {
+    this.loggerService.info('Starting TPC Server');
+  }
 }
 
-main();
+const mainService = Container.get(MainService);
+mainService.start();
