@@ -8,6 +8,8 @@ export class AppEnvironmentVariables {
 
   HTTP_HOST: string;
   HTTP_PORT: number;
+
+  MONGODB_SRV: string;
 }
 
 export const appEnvironmentVariablesSchema: JSONSchemaType<AppEnvironmentVariables> = {
@@ -15,7 +17,8 @@ export const appEnvironmentVariablesSchema: JSONSchemaType<AppEnvironmentVariabl
   properties: {
     NODE_ENV: {type: "string", enum: ["development", "production"], default: "development"},
     HTTP_HOST: {type: "string", default: "127.0.0.1"},
-    HTTP_PORT: {type: "number", default: 8080}
+    HTTP_PORT: {type: "number", default: 8080},
+    MONGODB_SRV: {type: "string", default: "mongodb://localhost:27017/tpc"},
   },
   required: ["NODE_ENV"],
   additionalProperties: false,
