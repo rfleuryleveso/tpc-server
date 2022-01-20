@@ -89,6 +89,7 @@ export class AuthService implements IAuthService {
 
     const salt = genSaltSync(10);
     newUser.password = hashSync(registerRequest.password, salt);
+    newUser.avatar = `https://avatars.dicebear.com/api/bottts/${newUser._id}.svg`
     await newUser.save();
 
     return {
