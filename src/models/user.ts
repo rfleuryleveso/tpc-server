@@ -15,15 +15,17 @@ export interface IUser {
   email: string;
   password: string;
   category: UserRole;
+  avatar: string;
 }
 
 export const UserSchema: Schema = new Schema<IUser>({
-  name: String,
-  surname: String,
-  birthdate: Date, // Automatic cast to date
-  email: String,
-  password: String,
-  category: Number,
+  name: Schema.Types.String,
+  surname: Schema.Types.String,
+  birthdate: Schema.Types.Date, // Automatic cast to date
+  email: Schema.Types.String,
+  password: Schema.Types.String,
+  category: Schema.Types.Number,
+  avatar: Schema.Types.String
 }, {
   collection: 'users'
 });
