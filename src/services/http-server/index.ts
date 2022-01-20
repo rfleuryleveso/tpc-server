@@ -2,7 +2,13 @@ import {Service} from "typedi";
 import {AppEnv} from "../env";
 import fastify, {FastifyInstance, FastifyPluginCallback, FastifyPluginOptions, FastifyRegisterOptions} from 'fastify'
 import {AppLogger} from "../logger";
+import {IUser} from "../../models/user";
 
+declare module 'fastify' {
+  export interface FastifyRequest {
+    user?: IUser
+  }
+}
 
 @Service()
 export class HttpServer {
