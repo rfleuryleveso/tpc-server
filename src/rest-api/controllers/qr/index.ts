@@ -52,7 +52,7 @@ export class QrController implements IController {
           return reply.send({success: true, hasPass: false, reason: 'no recent certificates'});
         } else {
           if ((recentCertificates[0].metadata.TEST_RESULT ?? 'positive') === 'negative') {
-            return reply.send({success: true, hasPass: true});
+            return reply.send({success: true, hasPass: true, user, certificates});
           } else {
             return reply.send({success: true, hasPass: false, reason: 'last certificate is positive'});
           }
@@ -61,17 +61,17 @@ export class QrController implements IController {
     } else {
       // The user is vaccinated
       if (testsCertificates.length === 0) {
-        return reply.send({success: true, hasPass: true});
+        return reply.send({success: true, hasPass: true, user, certificates});
       } else {
         const twoDaysAgo = DateTime.now().minus({day: 2});
         const recentCertificates = testsCertificates
           .filter(certificate => DateTime.fromJSDate(certificate.date) > twoDaysAgo)
           .sort((certificateA, certificateB) => certificateA.date.getTime() - certificateB.date.getTime());
         if (recentCertificates.length === 0) {
-          return reply.send({success: true, hasPass: true});
+          return reply.send({success: true, hasPass: true, user, certificates});
         } else {
           if ((recentCertificates[0].metadata.TEST_RESULT ?? 'positive') === 'negative') {
-            return reply.send({success: true, hasPass: true});
+            return reply.send({success: true, hasPass: true, user, certificates});
           } else {
             return reply.send({success: true, hasPass: false, reason: 'last certificate is positive'});
           }
