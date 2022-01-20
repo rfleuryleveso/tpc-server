@@ -11,10 +11,14 @@ export class AppEnvironmentVariables {
 
   SMTP_HOST: string;
   SMTP_PORT: number;
-  SMTP_MAIL: string;
+  SMTP_USER: string;
   SMTP_PASSWORD: string;
+  SMTP_EMAIL: string;
+
 
   MONGODB_SRV: string;
+
+  JWT_SECRET: string;
 }
 
 export const appEnvironmentVariablesSchema: JSONSchemaType<AppEnvironmentVariables> = {
@@ -23,11 +27,15 @@ export const appEnvironmentVariablesSchema: JSONSchemaType<AppEnvironmentVariabl
     NODE_ENV: {type: "string", enum: ["development", "production"], default: "development"},
     HTTP_HOST: {type: "string", default: "127.0.0.1"},
     HTTP_PORT: {type: "number", default: 8080},
-    SMTP_HOST: {type: "string", default: "smtp.gmail.com"},
-    SMTP_PORT: {type: "number", default: 587},
-    SMTP_MAIL: {type: "string", default: "noreply.tplc@gmail.com"},
-    SMTP_PASSWORD: {type: "string", default: ""},
+    SMTP_HOST: {type: "string", default: "smtp.mailtrap.io"},
+    SMTP_PORT: {type: "number", default: 2525},
+    SMTP_USER: {type: "string", default: "29a3a165ff9c6a"},
+    SMTP_PASSWORD: {type: "string", default: "0304029aad067f"},
+    SMTP_EMAIL: {type: "string", default: "noreply@tplc.net"},
+
     MONGODB_SRV: {type: "string", default: "mongodb://localhost:27017/tpc"},
+
+    JWT_SECRET: {type: "string", default: "t8m1idsJnyIsFCiTLJDaCxZwh3ghDEMyd9MUR1XR9Bo"},
   },
   required: ["NODE_ENV"],
   additionalProperties: false,
