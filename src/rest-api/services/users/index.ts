@@ -6,6 +6,8 @@ import {Certificate, User} from '../../../models'
 import {ICertificate} from "../../../models/certificate";
 import {IHttpUpdateUserRequest} from "../../controllers/users/bodies/updateUser";
 import {NoReplyMailer} from "../../../services/mailer";
+import {jsPDF} from "jspdf";
+import readFilePromise from "../../../utils/readFilePromise";
 
 interface IUsersService {
   index: RouteHandler
@@ -75,5 +77,29 @@ export class UsersService implements IUsersService {
       recipient: emails.join(','),
       message: `${user.name} ${user.surname} vous à déclaré en tant que cas-contact. Dernier test en date: ${certificate.date.toLocaleString()}`,
     });
+  }
+
+  async genCertificatePdf(user: HydratedDocument<IUser> | string): Promise<Buffer> {
+    if (typeof user === "string") {
+      user = await this.getUserById(user);
+    }
+    const doc = new jsPDF({format: 'a4', unit: 'pt'});
+    doc.addImage({
+      imageData: await readFilePromise('./storage/logo.png'),
+      format: 'PNG',
+      x: 10,
+      y: 10,
+      width: 96,
+      height: 96
+    });
+    doc.text(`Certificate for ${user.name} ${user.surname}`, 10 + 96 + 16, 10 + 48);
+    doc.setFontSize(13);
+    doc.setTextColor('red');
+    doc.text('POSITIVE', 595 - 80, 10 + 48);
+    doc.setTextColor('black');
+    doc.text(`Mr. or Ms. ${user.surname}, you are now eligible for a CovidPass. You can use this document as a proof.`, 10, 10 + 96 + 16, {
+      maxWidth: 595 - 10 - 10,
+    });
+    return Buffer.from(doc.output('arraybuffer'));
   }
 }

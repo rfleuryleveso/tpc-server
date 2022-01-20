@@ -16,6 +16,7 @@ import {addContactCase} from "./bodies/contactCase";
 export class UsersController implements IController {
   constructor(private authService: AuthService, private usersService: UsersService, private certificatesService: CertificatesService) {
     this.addUserCertificate = this.addUserCertificate.bind(this);
+    this.genCertificatePdf = this.genCertificatePdf.bind(this);
   }
 
   /**
@@ -27,6 +28,7 @@ export class UsersController implements IController {
   register: FastifyPluginCallback<FastifyPluginOptions> = (instance, _opts, done) => {
     instance.get('/', this.getUsers);
     instance.get('/:id', this.getUser)
+    instance.get('/:id/pdf', this.genCertificatePdf)
 
     instance.get('/:id/certificates', this.getUserCertificates)
     instance.post('/:id/certificates', this.addUserCertificate)
@@ -242,6 +244,22 @@ export class UsersController implements IController {
     return reply.send({
       user
     });
+  }
+
+  genCertificatePdf: RouteHandler = async (request, reply) => {
+    let target: string | undefined = undefined;
+    if ((request.user?.category ?? UserRole.USER) === UserRole.USER) {
+      target = request.user?._id?.toHexString();
+    } else {
+      target = (request.params as { id: string }).id;
+    }
+    if (!target) {
+      return reply.status(404).send({
+        success: false,
+        error: 'No target found'
+      })
+    }
+    return reply.type('application/pdf').send(await this.usersService.genCertificatePdf(target));
   }
 }
 

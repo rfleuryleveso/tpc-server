@@ -41,6 +41,7 @@
     "dotenv": "^14.1.0",
     "fastify": "^3.25.3",
     "jose": "^4.3.8",
+    "jspdf": "^2.5.0",
     "luxon": "^2.3.0",
     "mongoose": "^6.1.7",
     "nodemailer": "^6.7.2",
