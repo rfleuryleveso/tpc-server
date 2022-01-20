@@ -27,12 +27,12 @@ export class AuthController implements IController {
 
   login: RouteHandler = (request, reply) => {
     const {body} = request;
-    const validator = new Ajv({useDefaults: true});
+    const validator = new Ajv();
     const validate = validator.compile(loginSchema);
     // If there are errors, halt the execution
     if (!validate(body)) {
       // Print every error, if there are.
-      reply.code(410).send({
+      reply.code(406).send({
         success: false,
         error: validate.errors?.map(error => error.message).join(', ')
       });
