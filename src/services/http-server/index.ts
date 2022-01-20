@@ -3,10 +3,11 @@ import {AppEnv} from "../env";
 import fastify, {FastifyInstance, FastifyPluginCallback, FastifyPluginOptions, FastifyRegisterOptions} from 'fastify'
 import {AppLogger} from "../logger";
 import {IUser} from "../../models/user";
+import {HydratedDocument} from "mongoose";
 
 declare module 'fastify' {
   export interface FastifyRequest {
-    user?: IUser
+    user?: HydratedDocument<IUser>
   }
 }
 

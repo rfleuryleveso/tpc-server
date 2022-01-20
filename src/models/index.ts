@@ -1,2 +1,2 @@
 export {default as User} from './user'
-export {default as Medic} from './medics'
+export {default as Certificate} from './certificate'
