@@ -15,10 +15,11 @@ export class AppEnvironmentVariables {
   SMTP_PASSWORD: string;
   SMTP_EMAIL: string;
 
-
   MONGODB_SRV: string;
 
   JWT_SECRET: string;
+
+  PUBLIC_STORAGE_URL: string;
 }
 
 export const appEnvironmentVariablesSchema: JSONSchemaType<AppEnvironmentVariables> = {
@@ -36,6 +37,8 @@ export const appEnvironmentVariablesSchema: JSONSchemaType<AppEnvironmentVariabl
     MONGODB_SRV: {type: "string", default: "mongodb://localhost:27017/tpc"},
 
     JWT_SECRET: {type: "string", default: "t8m1idsJnyIsFCiTLJDaCxZwh3ghDEMyd9MUR1XR9Bo"},
+
+    PUBLIC_STORAGE_URL: {type: "string"}
   },
   required: ["NODE_ENV"],
   additionalProperties: false,
