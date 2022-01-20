@@ -1,43 +1,34 @@
-import {Schema} from 'mongoose';
+import {Model, Schema} from 'mongoose';
 import {Container} from "typedi";
 import {Database} from "../services/database";
 
-interface IVaccine {
-  date: Date,
-  lab: string
+export enum UserRole {
+  USER,
+  HEALTHCARE,
+  ADMIN
 }
 
-interface ITestResult {
-  date: Date,
-  result: boolean,
-  variant: string,
-}
-
-interface IUser {
-  token: string;
+export interface IUser {
   name: string;
   surname: string;
-  birthday: Date;
-  mail: string;
+  birthdate: Date;
+  email: string;
   password: string;
-  category: number;
-  vaccines: Array<IVaccine>,
-  tests_results: Array<ITestResult>
+  category: UserRole;
 }
 
-export const User: Schema = new Schema<IUser>({
-  token: String,
+export const UserSchema: Schema = new Schema<IUser>({
   name: String,
   surname: String,
-  birthday: Date, // Automatic cast to date
-  mail: String,
+  birthdate: Date, // Automatic cast to date
+  email: String,
   password: String,
   category: Number,
-  vaccines: [{date: Date, lab: String}],
-  tests_results: [{date: Date, result: Boolean, variant: String}]
 }, {
   collection: 'users'
 });
 
 const database = Container.get(Database);
-export default database.connection.model('User', User);
+const UserModel = database.connection.model('User', UserSchema) as Model<IUser>;
+
+export default UserModel;
