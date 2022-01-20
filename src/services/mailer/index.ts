@@ -1,37 +1,29 @@
-import { createTransport, Transporter } from 'nodemailer';
-import { Service } from 'typedi';
-import { AppEnv } from '../env';
+import {createTransport, Transporter} from 'nodemailer';
+import {Service} from 'typedi';
+import {AppEnv} from '../env';
 import Mail from 'nodemailer/lib/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { AppLogger } from '../logger';
+import {AppLogger} from '../logger';
 
-export interface EmailContentCasContact {
-  subjectCasContact: string,
-  messageCasContact: string,
-  recipientCasContact: string
+export interface TPCEmail {
+  subject: string;
+  recipient: string;
+  message: string;
 }
 
-export interface EmailContentCreateAccount {
-  subjectCreateAccount: string,
-  messageCreateAccount: string,
-  linkCreateAccount: string,
-  recipientCreateAccount: string
+export type EmailContentCasContact = TPCEmail
+
+export interface EmailContentCreateAccount extends TPCEmail {
+  link: string,
 }
 
-export interface EmailContentVerification {
-  subjectVerification: string,
-  messageVerification: string,
-  recipientVerification: string,
-  tokenVerificationLink: string
+export interface EmailContentVerification extends TPCEmail {
+  tokenLink: string
 }
-
 
 @Service()
 export class NoReplyMailer {
-
-
-  private transporter: Transporter<SMTPTransport.SentMessageInfo>;
-
+  private transport: Transporter<SMTPTransport.SentMessageInfo>;
 
   /**
    * setup smtp connection
@@ -39,49 +31,30 @@ export class NoReplyMailer {
    * @param appLogger
    */
   constructor(private appEnv: AppEnv, private appLogger: AppLogger) {
-
-    this.transporter = this.configTransporter();
+    this.transport = this.configTransport();
   }
 
   /**
-   *
-   * @private
-   * @param message
-   */
-  private sendMail(message: Mail.Options) {
-
-    return this.transporter.sendMail(message).then((result) => this.appLogger.info('Sent mail', result));
-  }
-
-  /**
-   * @return Promise<boolean> connection state
+   * @return Connection's state
    */
   async testConnection(): Promise<boolean> {
-    return await this.transporter.verify();
+    return await this.transport.verify();
   }
 
   /**
    * configuration transporter
    * @private
    */
-  configTransporter(): Transporter<SMTPTransport.SentMessageInfo> {
+  configTransport(): Transporter<SMTPTransport.SentMessageInfo> {
     return createTransport({
       host: this.appEnv.get('SMTP_HOST') as string,
       port: this.appEnv.get('SMTP_PORT') as number,
-      secure: false, // true for 465, false for other ports
+      secure: this.appEnv.get('SMTP_PORT') === 465, // Only the 465 port is secured.
       auth: {
-        user: this.appEnv.get('SMTP_MAIL') as string,
+        user: this.appEnv.get('SMTP_USER') as string,
         pass: this.appEnv.get('SMTP_PASSWORD') as string,
       },
     });
-  }
-
-  /**
-   * error message when something went wrong
-   * @protected
-   */
-  protected errorMessage() {
-    console.log('an error occured please verify recipient email address.');
   }
 
   /**
@@ -90,15 +63,13 @@ export class NoReplyMailer {
    */
   async createAccountMessage(details: EmailContentCreateAccount) {
     const message: Mail.Options = {
-      from: this.appEnv.get('SMTP_MAIL') as string,
-      to: details.recipientCreateAccount,
-      subject: details.subjectCreateAccount,
-      text: details.messageCreateAccount + details.linkCreateAccount,
-      html: '<b>' + details.messageCreateAccount + details.linkCreateAccount + '</b>',
+      from: this.appEnv.get('SMTP_EMAIL') as string,
+      to: details.recipient,
+      subject: details.subject,
+      text: details.message + details.link,
+      html: '<b>' + details.message + details.link + '</b>',
     };
-
     await this.sendMail(message);
-
   }
 
   /**
@@ -107,24 +78,33 @@ export class NoReplyMailer {
    */
   async casContactMessage(details: EmailContentCasContact) {
     const message: Mail.Options = {
-      from: this.appEnv.get('SMTP_MAIL') as string,
-      to: details.recipientCasContact,
-      subject: details.subjectCasContact,
-      text: details.messageCasContact,
-      html: '<b>' + details.messageCasContact + '</b>',
+      from: this.appEnv.get('SMTP_EMAIL') as string,
+      to: details.recipient,
+      subject: details.subject,
+      text: details.message,
+      html: '<b>' + details.message + '</b>',
     };
     await this.sendMail(message);
   }
 
   async emailVerification(details: EmailContentVerification) {
     const message: Mail.Options = {
-      from: this.appEnv.get('SMTP_MAIL') as string,
-      to: details.recipientVerification,
-      subject: details.subjectVerification,
-      text: details.messageVerification + details.tokenVerificationLink,
-      html: '<b>' + details.messageVerification + details.tokenVerificationLink + '</b>',
+      from: this.appEnv.get('SMTP_EMAIL') as string,
+      to: details.recipient,
+      subject: details.subject,
+      text: details.message + details.tokenLink,
+      html: '<b>' + details.message + details.tokenLink + '</b>',
     };
     await this.sendMail(message);
+  }
+
+  /**
+   *
+   * @private
+   * @param message
+   */
+  private sendMail(message: Mail.Options) {
+    return this.transport.sendMail(message).then((result) => this.appLogger.info('Sent mail', result));
   }
 
 
