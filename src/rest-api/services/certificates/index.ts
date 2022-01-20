@@ -17,4 +17,17 @@ export class CertificatesService implements ICertificateService {
   async createUserCertificate(certificate: ICertificate): Promise<HydratedDocument<ICertificate>> {
     return Certificate.create(certificate);
   }
+
+  async getCertificateById(certificateId: string): Promise<HydratedDocument<ICertificate>> {
+    const certificate = await Certificate.findById(certificateId);
+    if (!certificate) {
+      throw new Error('Unknown certificate');
+    }
+    return certificate;
+  }
+
+  async getCertificates(): Promise<Array<HydratedDocument<ICertificate>>> {
+    return Certificate.find();
+  }
+
 }
