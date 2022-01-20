@@ -14,7 +14,7 @@ export const registerSchema: JSONSchemaType<IHttpRegisterRequest> = {
   properties: {
     name: {type: "string"},
     surname: {type: "string"},
-    email: {type: "string"},
+    email: {type: "string", format: "email"},
     password: {type: "string"},
     birthdate: {type: "string"},
     category: {type: "number"},
