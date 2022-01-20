@@ -30,7 +30,7 @@ export class AppEnv {
     this.values = parsed;
   }
 
-  public get(key: keyof AppEnvironmentVariables): AppEnvironmentVariables[keyof AppEnvironmentVariables] {
+  public get(key: keyof AppEnvironmentVariables): AppEnvironmentVariables[typeof key] {
     return this.values[key];
   }
 }
