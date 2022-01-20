@@ -6,7 +6,6 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import {AppLogger} from '../logger';
 
 export interface TPCEmail {
-  subject: string;
   recipient: string;
   message: string;
 }
@@ -65,7 +64,7 @@ export class NoReplyMailer {
     const message: Mail.Options = {
       from: this.appEnv.get('SMTP_EMAIL') as string,
       to: details.recipient,
-      subject: details.subject,
+      subject: '',
       text: details.message + details.link,
       html: '<b>' + details.message + details.link + '</b>',
     };
@@ -80,23 +79,13 @@ export class NoReplyMailer {
     const message: Mail.Options = {
       from: this.appEnv.get('SMTP_EMAIL') as string,
       to: details.recipient,
-      subject: details.subject,
+      subject: 'Vous êtes cas-contact',
       text: details.message,
       html: '<b>' + details.message + '</b>',
     };
     await this.sendMail(message);
   }
 
-  async emailVerification(details: EmailContentVerification) {
-    const message: Mail.Options = {
-      from: this.appEnv.get('SMTP_EMAIL') as string,
-      to: details.recipient,
-      subject: details.subject,
-      text: details.message + details.tokenLink,
-      html: '<b>' + details.message + details.tokenLink + '</b>',
-    };
-    await this.sendMail(message);
-  }
 
   /**
    *
