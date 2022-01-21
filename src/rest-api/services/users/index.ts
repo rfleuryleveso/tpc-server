@@ -34,7 +34,7 @@ export class UsersService implements IUsersService {
     if (typeof user === "string") {
       user = await this.getUserById(user);
     }
-    return Certificate.where('user').equals(user._id).exec();
+    return Certificate.where('email').equals(user.email).exec();
   }
 
   async updateUserImage(user: HydratedDocument<IUser> | string, image?: Buffer): Promise<HydratedDocument<IUser>> {

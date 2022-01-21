@@ -236,7 +236,6 @@ export class UsersController implements IController {
     const testCertificates = certificates
       .filter(certificate => certificate.type === CertificateType.TEST)
       .sort((certificateA, certificateB) => certificateB.date.getTime() - certificateA.date.getTime());
-    console.log(testCertificates);
     if (testCertificates.length === 0 || (testCertificates[0].metadata?.RESULT ?? 'negative') === 'negative') {
       return reply.status(406).send({
         success: false,
