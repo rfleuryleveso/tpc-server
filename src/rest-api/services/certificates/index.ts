@@ -2,7 +2,7 @@ import {RouteHandler} from "fastify";
 import {Service} from "typedi";
 import {HydratedDocument} from "mongoose";
 import {Certificate} from '../../../models'
-import {CertificateType, ICertificate} from "../../../models/certificate";
+import {CertificateType, ICertificate, ICertificateWithSignature} from "../../../models/certificate";
 import {IUser} from "../../../models/user";
 import {jsPDF} from "jspdf";
 import readFilePromise from "../../../utils/readFilePromise";
@@ -82,5 +82,9 @@ export class CertificatesService implements ICertificateService {
     });
 
     return Buffer.from(doc.output('arraybuffer'));
+  }
+
+  async signCertificate(certificate: HydratedDocument<ICertificate>): Promise<ICertificateWithSignature> {
+    return {...certificate.toJSON(), signature: ''};
   }
 }

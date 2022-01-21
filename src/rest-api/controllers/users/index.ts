@@ -98,10 +98,7 @@ export class UsersController implements IController {
       certificates = await this.usersService.getUserCertificates(target);
     }
 
-    const certificatesWithSignature = certificates.map<ICertificateWithSignature>(certificate => ({
-      ...certificate,
-      signature: ''
-    }))
+    const certificatesWithSignature = await Promise.all(certificates.map<Promise<ICertificateWithSignature>>(async (certificate) => this.certificatesService.signCertificate(certificate)));
 
     return reply.send({
       certificates: certificatesWithSignature
