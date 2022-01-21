@@ -4,25 +4,29 @@ import {AppEnv} from '../env';
 import Mail from 'nodemailer/lib/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import {AppLogger} from '../logger';
+import * as fs from 'fs';
 
 export interface TPCEmail {
   recipient: string;
-  message: string;
 }
 
-export type EmailContentCasContact = TPCEmail
+export interface EmailContentCasContact extends TPCEmail {
+  name: string,
+  surname: string,
+}
 
 export interface EmailContentCreateAccount extends TPCEmail {
-  link: string,
+  name: string,
+  surname: string,
 }
 
-export interface EmailContentVerification extends TPCEmail {
-  tokenLink: string
-}
 
 @Service()
 export class NoReplyMailer {
   private transport: Transporter<SMTPTransport.SentMessageInfo>;
+
+
+  private registerEmailTemplate = fs.createReadStream('storage/mails/template/register.html');
 
   /**
    * setup smtp connection
@@ -64,9 +68,9 @@ export class NoReplyMailer {
     const message: Mail.Options = {
       from: this.appEnv.get('SMTP_EMAIL') as string,
       to: details.recipient,
-      subject: '',
-      text: details.message + details.link,
-      html: '<b>' + details.message + details.link + '</b>',
+      subject: 'Bienvenue sur TouchePasLaCovid',
+      text: `Bonjour ${details.name} ${details.surname}, vous pouvez maintenant accèder à votre compte.`,
+      html: this.registerEmailTemplate,
     };
     await this.sendMail(message);
   }
@@ -80,8 +84,8 @@ export class NoReplyMailer {
       from: this.appEnv.get('SMTP_EMAIL') as string,
       to: details.recipient,
       subject: 'Vous êtes cas-contact',
-      text: details.message,
-      html: '<b>' + details.message + '</b>',
+      text: `Bonjour, vous avez été déclaré cas contact par ${details.name} ${details.surname}`,
+      html: '',
     };
     await this.sendMail(message);
   }
