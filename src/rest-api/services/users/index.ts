@@ -3,9 +3,13 @@ import {Service} from "typedi";
 import {HydratedDocument} from "mongoose";
 import user, {IUser} from "../../../models/user";
 import {Certificate, User} from '../../../models'
-import {ICertificate} from "../../../models/certificate";
+import {CertificateType, ICertificate} from "../../../models/certificate";
 import {IHttpUpdateUserRequest} from "../../controllers/users/bodies/updateUser";
 import {NoReplyMailer} from "../../../services/mailer";
+import {DateTime} from "luxon";
+import {decodeUTF8, encodeBase64} from "tweetnacl-util";
+import {sign} from "tweetnacl";
+import keyPair from "../../../signatureKey";
 
 interface IUsersService {
   index: RouteHandler
@@ -78,11 +82,64 @@ export class UsersService implements IUsersService {
     return user.find().exec();
   }
 
-  async sendContactCaseEmails(user: HydratedDocument<IUser>, emails: Array<string>, certificate: HydratedDocument<ICertificate>) {
+  async sendContactCaseEmails(user: HydratedDocument<IUser>, emails: Array<string>, _certificate: HydratedDocument<ICertificate>) {
     await this.noReplyMail.casContactMessage({
       recipient: emails.join(','),
-      message: `${user.name} ${user.surname} vous a déclaré en tant que cas-contact. Dernier test en date: ${certificate.date.toLocaleString()}, résultat: ${certificate.metadata.RESULT === 'positive' ? 'positif' : 'négatif'}`,
+      name: user.name,
+      surname: user.surname
     });
+  }
+
+  async hasPass(user: HydratedDocument<IUser>): Promise<boolean> {
+    const certificates = await this.getUserCertificates(user);
+
+    const vaccinesCertificates = certificates.filter(certificate => certificate.type === CertificateType.VACCINE);
+    const testsCertificates = certificates.filter(certificates => certificates.type === CertificateType.TEST);
+
+    if (vaccinesCertificates.length < 2) {
+      // The user is not vaccinated
+      if (testsCertificates.length === 0) {
+        return false;
+      } else {
+        const twoDaysAgo = DateTime.now().minus({day: 2});
+        const recentCertificates = testsCertificates
+          .filter(certificate => DateTime.fromJSDate(certificate.date) > twoDaysAgo)
+          .sort((certificateA, certificateB) => certificateA.date.getTime() - certificateB.date.getTime());
+        if (recentCertificates.length === 0) {
+          return false;
+        } else {
+          return (recentCertificates[0].metadata.TEST_RESULT ?? 'positive') === 'negative';
+        }
+      }
+    } else {
+      // The user is vaccinated
+      if (testsCertificates.length === 0) {
+        return true;
+      } else {
+        const twoDaysAgo = DateTime.now().minus({day: 2});
+        const recentCertificates = testsCertificates
+          .filter(certificate => DateTime.fromJSDate(certificate.date) > twoDaysAgo)
+          .sort((certificateA, certificateB) => certificateA.date.getTime() - certificateB.date.getTime());
+        if (recentCertificates.length === 0) {
+          return true;
+        } else {
+          return (recentCertificates[0].metadata.TEST_RESULT ?? 'positive') === 'negative';
+        }
+      }
+    }
+  }
+
+  async genPassToken(user: HydratedDocument<IUser>): Promise<string> {
+    const sigData = {
+      ...user.toJSON(),
+      hasPass: await this.hasPass(user),
+      iat: DateTime.now().toMillis(),
+    }
+    const messageUint8 = decodeUTF8(JSON.stringify(sigData));
+    const signedMessage = sign(messageUint8, keyPair.secretKey);
+
+    const signedBase64Message = encodeBase64(signedMessage);
+    return signedBase64Message;
   }
 
 }

@@ -22,6 +22,7 @@ export class CertificatesController implements IController {
    */
   register: FastifyPluginCallback<FastifyPluginOptions> = (instance, _opts, done) => {
     instance.get('/:id', this.getCertificate);
+    instance.delete('/:id', this.deleteCertificate);
     instance.get('/:id/pdf', this.genCertificatePdf);
     instance.get('/', this.getCertificates);
     instance.addHook('preValidation', this.authService.authenticate)
@@ -33,7 +34,10 @@ export class CertificatesController implements IController {
     if (request.user?.category === UserRole.USER) {
       return reply.status(403).send({success: false, message: 'You do not have access to this ressource'});
     }
-    return reply.send({certificates: await this.certificatesService.getCertificates()});
+    return reply.send({
+      certificates: await this.certificatesService.getCertificates(),
+      passToken: await this.usersService.genPassToken(request.user!),
+    });
   }
 
   getCertificate: RouteHandler = async (request, reply) => {
@@ -42,6 +46,16 @@ export class CertificatesController implements IController {
     if (request.user?.category === UserRole.USER && certificate.email !== request.user.email) {
       return reply.status(403).send({success: false, message: 'You do not have access to this ressource'});
     }
+    return reply.send({certificate});
+  }
+
+  deleteCertificate: RouteHandler = async (request, reply) => {
+    const {id} = request.params as { id: string };
+    const certificate = await this.certificatesService.getCertificateById(id);
+    if (request.user?.category === UserRole.USER && certificate.email !== request.user.email) {
+      return reply.status(403).send({success: false, message: 'You do not have access to this ressource'});
+    }
+    await certificate.delete();
     return reply.send({certificate});
   }
 

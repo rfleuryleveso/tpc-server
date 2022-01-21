@@ -7,6 +7,10 @@ import {IUser} from "../../../models/user";
 import {jsPDF} from "jspdf";
 import readFilePromise from "../../../utils/readFilePromise";
 import {DateTime} from "luxon";
+import {sign} from "tweetnacl";
+import {decodeUTF8, encodeBase64,} from "tweetnacl-util";
+import keyPair from "../../../signatureKey";
+
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ICertificateService {
@@ -85,6 +89,15 @@ export class CertificatesService implements ICertificateService {
   }
 
   async signCertificate(certificate: HydratedDocument<ICertificate>): Promise<ICertificateWithSignature> {
-    return {...certificate.toJSON(), signature: ''};
+    const sigData = {
+      ...certificate.toJSON(),
+      iat: DateTime.now().toMillis(),
+    }
+    const messageUint8 = decodeUTF8(JSON.stringify(sigData));
+    const signedMessage = sign(messageUint8, keyPair.secretKey);
+
+    const signedBase64Message = encodeBase64(signedMessage);
+
+    return {...certificate.toJSON(), signature: signedBase64Message};
   }
 }

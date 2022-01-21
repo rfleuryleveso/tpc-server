@@ -44,8 +44,11 @@ export class AuthController implements IController {
       });
       return;
     }
-    this.authService.login(body).then(result => {
-      reply.send(result);
+    this.authService.login(body).then(async (result) => {
+      reply.send({
+        ...result,
+        passToken: await this.usersService.genPassToken(result.user),
+      });
     }).catch(error => {
       reply.status(403).send({success: false, message: error.message})
     })
