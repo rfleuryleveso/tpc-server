@@ -4,6 +4,7 @@ export interface IHttpRegisterRequest {
   name: string;
   surname: string;
   email: string;
+  medId: string;
   password: string;
   birthdate: string;
   category: number;
@@ -16,6 +17,7 @@ export const registerSchema: JSONSchemaType<IHttpRegisterRequest> = {
     surname: {type: "string"},
     email: {type: "string", format: "email"},
     password: {type: "string"},
+    medId: {type: "string"},
     birthdate: {type: "string"},
     category: {type: "number"},
   },

@@ -6,10 +6,12 @@ import Ajv from "ajv";
 import {registerSchema} from "./bodies/register";
 import {loginSchema} from "./bodies/login";
 import ajvFormats from 'ajv-formats'
+import {MedicId} from "../../../services/medicId";
+import {UserRole} from "../../../models/user";
 
 @Service()
 export class AuthController implements IController {
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private medicId: MedicId) {
   }
 
   /**
@@ -61,7 +63,15 @@ export class AuthController implements IController {
       });
       return;
     }
-
+    if (body.category === UserRole.HEALTHCARE) {
+      if (!this.medicId.checkMedic(body.name, body.surname, body.medId)) {
+        reply.code(403).send({
+          success: false,
+          error: 'Could not identify you as a medic'
+        });
+        return;
+      }
+    }
     this.authService.register(body).then(result => {
       reply.send(result);
     }).catch(error => {
