@@ -51,27 +51,27 @@ export class AuthService implements IAuthService {
       throw new Error('Invalid password');
     }
 
-    // User's payload
-    const payload = {
-      _id: databaseUser._id.toHexString(),
-      firstName: databaseUser.name,
-      lastName: databaseUser.surname
-    }
 
-    // Create a JWT Token, valid for two years, containing user's payload
-    const token = await new jose.SignJWT(payload)
+    return {
+      user: databaseUser,
+      token: await this.createUserToken(databaseUser),
+    }
+  }
+
+  // Create a JWT Token, valid for two years, containing user's payload
+  async createUserToken(user: HydratedDocument<IUser>): Promise<string> {
+    const token = await new jose.SignJWT({
+      _id: user._id,
+      firstName: user.name,
+      lastName: user.surname
+    })
       .setProtectedHeader({alg: 'HS256'})
       .setIssuedAt()
       .setIssuer('urn:tpc:issuer')
       .setAudience('urn:tpc:audience')
       .setExpirationTime('2y')
-      .sign(this.jwtPrivateKey)
-
-
-    return {
-      user: databaseUser,
-      token
-    }
+      .sign(this.jwtPrivateKey);
+    return token;
   }
 
   register: ServiceMethod<IHttpRegisterRequest, IRegisterResponse> = async (registerRequest) => {
@@ -93,7 +93,8 @@ export class AuthService implements IAuthService {
     await newUser.save();
 
     return {
-      user: newUser
+      user: newUser,
+      token: await this.createUserToken(newUser),
     }
   }
 
