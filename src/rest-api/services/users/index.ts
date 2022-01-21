@@ -131,7 +131,7 @@ export class UsersService implements IUsersService {
 
   async genPassToken(user: HydratedDocument<IUser>): Promise<string> {
     const sigData = {
-      ...user.toJSON(),
+      _id: user._id,
       hasPass: await this.hasPass(user),
       iat: DateTime.now().toMillis(),
     }
