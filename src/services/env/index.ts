@@ -17,7 +17,7 @@ export class AppEnv {
 
     // Validate the parsed environment against the env schema.
     // Use defaults mean that non-compliant values will be replaced with defaults
-    const validator = new Ajv({useDefaults: true});
+    const validator = new Ajv({useDefaults: true, coerceTypes: true});
     const validate = validator.compile(appEnvironmentVariablesSchema);
     // If there are errors, halt the execution
     if (!validate(parsed)) {
