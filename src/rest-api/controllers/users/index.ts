@@ -11,6 +11,7 @@ import {addCertificateRequest} from "./bodies/addCertificate";
 import {CertificatesService} from "../../services/certificates";
 import {updateUserSchema} from "./bodies/updateUser";
 import {addContactCase} from "./bodies/contactCase";
+import ajvFormats from 'ajv-formats'
 
 @Service()
 export class UsersController implements IController {
@@ -219,7 +220,9 @@ export class UsersController implements IController {
 
     const {body} = request;
     const validator = new Ajv();
+    ajvFormats(validator);
     const validate = validator.compile(addContactCase);
+
     // If there are errors, halt the execution
     if (!validate(body)) {
       // Print every error, if there are.
@@ -232,7 +235,8 @@ export class UsersController implements IController {
     const certificates = await this.usersService.getUserCertificates(target);
     const testCertificates = certificates
       .filter(certificate => certificate.type === CertificateType.TEST)
-      .sort((certificateA, certificateB) => certificateA.date.getTime() - certificateB.date.getTime());
+      .sort((certificateA, certificateB) => certificateB.date.getTime() - certificateA.date.getTime());
+    console.log(testCertificates);
     if (testCertificates.length === 0 || (testCertificates[0].metadata?.RESULT ?? 'negative') === 'negative') {
       return reply.status(406).send({
         success: false,

@@ -5,6 +5,7 @@ import {AuthService} from "../../services/auth";
 import Ajv from "ajv";
 import {registerSchema} from "./bodies/register";
 import {loginSchema} from "./bodies/login";
+import ajvFormats from 'ajv-formats'
 
 @Service()
 export class AuthController implements IController {
@@ -28,6 +29,7 @@ export class AuthController implements IController {
   login: RouteHandler = (request, reply) => {
     const {body} = request;
     const validator = new Ajv();
+    ajvFormats(validator);
     const validate = validator.compile(loginSchema);
     // If there are errors, halt the execution
     if (!validate(body)) {
@@ -48,6 +50,7 @@ export class AuthController implements IController {
   registerUser: RouteHandler = (request, reply) => {
     const {body} = request;
     const validator = new Ajv({useDefaults: true});
+    ajvFormats(validator);
     const validate = validator.compile(registerSchema);
     // If there are errors, halt the execution
     if (!validate(body)) {
