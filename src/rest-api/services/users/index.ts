@@ -75,7 +75,7 @@ export class UsersService implements IUsersService {
   async sendContactCaseEmails(user: HydratedDocument<IUser>, emails: Array<string>, certificate: HydratedDocument<ICertificate>) {
     await this.noReplyMail.casContactMessage({
       recipient: emails.join(','),
-      message: `${user.name} ${user.surname} vous à déclaré en tant que cas-contact. Dernier test en date: ${certificate.date.toLocaleString()}`,
+      message: `${user.name} ${user.surname} vous a déclaré en tant que cas-contact. Dernier test en date: ${certificate.date.toLocaleString()}, résultat: ${certificate.metadata.RESULT === 'positive' ? 'positif' : 'négatif'}`,
     });
   }
 
