@@ -8,7 +8,6 @@ export enum CertificateType {
 }
 
 export interface ICertificate {
-  ssn?: string;
   email?: string;
 
   type: CertificateType;
@@ -16,8 +15,11 @@ export interface ICertificate {
   metadata: Record<string, string>,
 }
 
+export interface ICertificateWithSignature extends ICertificate {
+  signature: string;
+}
+
 export const CertificateSchema: Schema = new Schema<ICertificate>({
-  ssn: Schema.Types.String,
   email: Schema.Types.String,
   type: Schema.Types.Number,
   date: Schema.Types.Date,

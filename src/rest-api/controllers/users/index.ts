@@ -5,7 +5,7 @@ import {AuthService} from "../../services/auth";
 import {UsersService} from "../../services/users";
 import {IUser, UserRole} from "../../../models/user";
 import {HydratedDocument} from "mongoose";
-import {CertificateType, ICertificate} from "../../../models/certificate";
+import {CertificateType, ICertificate, ICertificateWithSignature} from "../../../models/certificate";
 import Ajv from "ajv";
 import {addCertificateRequest} from "./bodies/addCertificate";
 import {CertificatesService} from "../../services/certificates";
@@ -17,7 +17,6 @@ import ajvFormats from 'ajv-formats'
 export class UsersController implements IController {
   constructor(private authService: AuthService, private usersService: UsersService, private certificatesService: CertificatesService) {
     this.addUserCertificate = this.addUserCertificate.bind(this);
-    this.genCertificatePdf = this.genCertificatePdf.bind(this);
   }
 
   /**
@@ -29,7 +28,6 @@ export class UsersController implements IController {
   register: FastifyPluginCallback<FastifyPluginOptions> = (instance, _opts, done) => {
     instance.get('/', this.getUsers);
     instance.get('/:id', this.getUser)
-    instance.get('/:id/pdf', this.genCertificatePdf)
 
     instance.get('/:id/certificates', this.getUserCertificates)
     instance.post('/:id/certificates', this.addUserCertificate)
@@ -98,8 +96,14 @@ export class UsersController implements IController {
     } else {
       certificates = await this.usersService.getUserCertificates(target);
     }
+
+    const certificatesWithSignature = certificates.map<ICertificateWithSignature>(certificate => ({
+      ...certificate,
+      signature: ''
+    }))
+
     return reply.send({
-      certificates
+      certificates: certificatesWithSignature
     });
   }
 
@@ -249,21 +253,7 @@ export class UsersController implements IController {
     });
   }
 
-  genCertificatePdf: RouteHandler = async (request, reply) => {
-    let target: string | undefined = undefined;
-    if ((request.user?.category ?? UserRole.USER) === UserRole.USER) {
-      target = request.user?._id?.toHexString();
-    } else {
-      target = (request.params as { id: string }).id;
-    }
-    if (!target) {
-      return reply.status(404).send({
-        success: false,
-        error: 'No target found'
-      })
-    }
-    return reply.type('application/pdf').send(await this.usersService.genCertificatePdf(target));
-  }
+
 }
 
 

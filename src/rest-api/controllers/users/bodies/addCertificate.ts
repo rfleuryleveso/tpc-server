@@ -4,7 +4,8 @@ import {CertificateType} from "../../../../models/certificate";
 export interface IHttpAddCertificateRequest {
   email: string;
   type: CertificateType;
-  metadata: Record<string, string>
+  metadata: Record<string, string>,
+  date: string,
 }
 
 export const addCertificateRequest: JSONSchemaType<IHttpAddCertificateRequest> = {
@@ -12,7 +13,8 @@ export const addCertificateRequest: JSONSchemaType<IHttpAddCertificateRequest> =
   properties: {
     email: {type: "string"},
     type: {type: "number", enum: [0, 1]},
-    metadata: {type: "object", required: []}
+    metadata: {type: "object", required: []},
+    date: {type: 'string', format: 'date'}
   },
   required: ["email", "type"],
   additionalProperties: false,

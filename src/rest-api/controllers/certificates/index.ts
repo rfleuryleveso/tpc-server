@@ -3,11 +3,13 @@ import {Service} from "typedi";
 import {FastifyPluginCallback, FastifyPluginOptions, RouteHandler} from "fastify";
 import {CertificatesService} from "../../services/certificates";
 import {AuthService} from "../../services/auth";
-import {UserRole} from "../../../models/user";
+import {IUser, UserRole} from "../../../models/user";
+import {HydratedDocument} from "mongoose";
+import {UsersService} from "../../services/users";
 
 @Service()
 export class CertificatesController implements IController {
-  constructor(private certificatesService: CertificatesService, private authService: AuthService) {
+  constructor(private certificatesService: CertificatesService, private authService: AuthService, private usersService: UsersService) {
     this.getCertificate = this.getCertificate.bind(this);
     this.getCertificates = this.getCertificates.bind(this);
   }
@@ -20,6 +22,7 @@ export class CertificatesController implements IController {
    */
   register: FastifyPluginCallback<FastifyPluginOptions> = (instance, _opts, done) => {
     instance.get('/:id', this.getCertificate);
+    instance.get('/:id/pdf', this.genCertificatePdf);
     instance.get('/', this.getCertificates);
     instance.addHook('preValidation', this.authService.authenticate)
     done();
@@ -40,6 +43,22 @@ export class CertificatesController implements IController {
       return reply.status(403).send({success: false, message: 'You do not have access to this ressource'});
     }
     return reply.send({certificate});
+  }
+
+  genCertificatePdf: RouteHandler = async (request, reply) => {
+    const certificate = await this.certificatesService.getCertificateById((request.params as { id: string }).id);
+    if (!request.user) {
+      return reply.status(403).send({success: false, error: 'You do not have access to this ressource'});
+    }
+    let user: HydratedDocument<IUser> = request.user;
+    if (user.category === UserRole.USER) {
+      if (certificate.email !== user.email) {
+        return reply.status(403).send({success: false, error: 'You do not have access to this ressource'});
+      }
+    } else {
+      user = await this.usersService.getUserByEmail(certificate.email!);
+    }
+    return reply.type('application/pdf').send(await this.certificatesService.genCertificatePdf(user, certificate));
   }
 
 }
