@@ -14,7 +14,7 @@ export const addCertificateRequest: JSONSchemaType<IHttpAddCertificateRequest> =
     email: {type: "string"},
     type: {type: "number", enum: [0, 1]},
     metadata: {type: "object", required: []},
-    date: {type: 'string', format: 'date'}
+    date: {type: 'string', format: 'date-time'}
   },
   required: ["email", "type"],
   additionalProperties: false,

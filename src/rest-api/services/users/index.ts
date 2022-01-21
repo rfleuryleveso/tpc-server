@@ -108,7 +108,7 @@ export class UsersService implements IUsersService {
         if (recentCertificates.length === 0) {
           return false;
         } else {
-          return (recentCertificates[0].metadata.TEST_RESULT ?? 'positive') === 'negative';
+          return (recentCertificates[0].metadata.RESULT ?? 'positive') === 'negative';
         }
       }
     } else {
@@ -123,7 +123,7 @@ export class UsersService implements IUsersService {
         if (recentCertificates.length === 0) {
           return true;
         } else {
-          return (recentCertificates[0].metadata.TEST_RESULT ?? 'positive') === 'negative';
+          return (recentCertificates[0].metadata.RESULT ?? 'positive') === 'negative';
         }
       }
     }
@@ -131,7 +131,7 @@ export class UsersService implements IUsersService {
 
   async genPassToken(user: HydratedDocument<IUser>): Promise<string> {
     const sigData = {
-      ...user.toJSON(),
+      _id: user._id,
       hasPass: await this.hasPass(user),
       iat: DateTime.now().toMillis(),
     }

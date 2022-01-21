@@ -85,7 +85,7 @@ export class NoReplyMailer {
       to: details.recipient,
       subject: 'Vous êtes cas-contact',
       text: `Bonjour, vous avez été déclaré cas contact par ${details.name} ${details.surname}`,
-      html: '',
+      html: `Bonjour, vous avez été déclaré cas contact par ${details.name} ${details.surname}`,
     };
     await this.sendMail(message);
   }

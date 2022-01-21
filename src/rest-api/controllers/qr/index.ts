@@ -31,8 +31,9 @@ export class QrController implements IController {
         error: 'User not found'
       })
     }
+    const certificates = await this.usersService.getUserCertificates(user);
     const hasPass = await this.usersService.hasPass(user);
-    reply.send({success: true, hasPass})
+    reply.send({success: true, hasPass, user, certificates})
   }
 }
 
