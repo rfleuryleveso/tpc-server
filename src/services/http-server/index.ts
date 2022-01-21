@@ -4,6 +4,7 @@ import fastify, {FastifyInstance, FastifyPluginCallback, FastifyPluginOptions, F
 import {AppLogger} from "../logger";
 import {IUser} from "../../models/user";
 import {HydratedDocument} from "mongoose";
+import fastifyCors from "fastify-cors";
 
 declare module 'fastify' {
   export interface FastifyRequest {
@@ -17,6 +18,7 @@ export class HttpServer {
 
   constructor(private appEnv: AppEnv, private logger: AppLogger) {
     this.fastifyInstance = fastify();
+    this.fastifyInstance.register(fastifyCors, {origin: true})
   }
 
   /**
@@ -26,6 +28,7 @@ export class HttpServer {
    */
   public register(controller: FastifyPluginCallback<FastifyPluginOptions>, options: FastifyRegisterOptions<FastifyPluginOptions> = {}) {
     this.fastifyInstance.register(controller, options);
+
   }
 
   /**

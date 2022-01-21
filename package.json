@@ -41,6 +41,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^14.1.0",
     "fastify": "^3.25.3",
+    "fastify-cors": "^6.0.2",
     "jose": "^4.3.8",
     "jspdf": "^2.5.0",
     "luxon": "^2.3.0",
