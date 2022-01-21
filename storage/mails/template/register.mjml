@@ -1,0 +1,56 @@
+<mjml>
+  <mj-body background-color="">
+    <mj-section full-width="full-width">
+    </mj-section>
+    <mj-section background-color="#ffffff" full-width="full-width">
+      <mj-column width="33.33333333333333%" vertical-align="middle">
+        <mj-image src="https://cdn.discordapp.com/attachments/932646060990554174/933743986080878622/logo_definitif.png"
+                  alt="Touche pas à la covid" padding-bottom="0px" padding-top="0px">
+          <mj-text>Touche pas à la covid</mj-text>
+        </mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section
+            background-url="https://cdn.discordapp.com/attachments/932646861104377876/934027874418171944/2100x1200_header_France.jpg"
+            vertical-align="middle" background-size="cover" full-width="full-width" background-repeat="no-repeat">
+      <mj-column width="100%" vertical-align="middle">
+        <mj-text align="center" font-size="24px" color="#" padding-bottom="10px" padding-top="45px">
+          <span style="font-size: 30px; line-height: 30px;">Bienvenue sur TPLC</span>
+          <br/>
+          <br/>
+          <b style="color: #">TPLC</b>
+          vous remercie de votre confiance
+        </mj-text>
+        <mj-button align="center" background-color="#e85034" color="#fff" border-radius="24px" href="#"
+                   font-family="Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif"
+                   padding-bottom="45px" padding-top="10px">Accéder au site
+        </mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" vertical-align="top" full-width="full-width">
+      <mj-column vertical-align="top" width="33.33333333333333%">
+        <mj-image src="http://191n.mj.am/img/191n/1t/hs.png" alt="" width="50px"></mj-image>
+        <mj-text align="center" color="#9da3a3" font-size="11px" padding-bottom="30px">
+          <span style="font-size: 14px; color: #e85034">Stats covid</span>
+          <br/>
+          <br/>Retrouver l'ensemble des statistiques quotidiennes du Covid en France.
+        </mj-text>
+      </mj-column>
+      <mj-column vertical-align="top" width="33.33333333333333%">
+        <mj-image src="http://191n.mj.am/img/191n/1t/hm.png" alt="" width="50px"></mj-image>
+        <mj-text align="center" color="#9da3a3" font-size="11px" padding-bottom="30px">
+          <span style="font-size: 14px; color: #e85034">Mon carnet de vaccination</span>
+          <br/>
+          <br/>Accéder à tous vos différents tests et vaccins liés au Covid.
+        </mj-text>
+      </mj-column>
+      <mj-column vertical-align="top" width="33.33333333333333%">
+        <mj-image src="http://191n.mj.am/img/191n/1t/hl.png" alt="" width="50px"></mj-image>
+        <mj-text align="center" color="#9da3a3" font-size="11px" padding-bottom="30px" padding-top="3px">
+          <span style="font-size: 14px; color: #e85034">Mon pass sanitaire</span>
+          <br/>
+          <br/>Vous pourrez accéder à votre pass sanitaire à l'aide d'un QR Code ou d'un PDF
+        </mj-text>
+      </mj-column>
+  </mj-body>
+</mjml>

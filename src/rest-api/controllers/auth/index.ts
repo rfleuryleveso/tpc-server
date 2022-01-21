@@ -8,10 +8,12 @@ import {loginSchema} from "./bodies/login";
 import ajvFormats from 'ajv-formats'
 import {MedicId} from "../../../services/medicId";
 import {UserRole} from "../../../models/user";
+import {NoReplyMailer} from "../../../services/mailer";
+import {UsersService} from "../../services/users";
 
 @Service()
 export class AuthController implements IController {
-  constructor(private authService: AuthService, private medicId: MedicId) {
+  constructor(private authService: AuthService, private medicId: MedicId, private noReplyMailer: NoReplyMailer, private usersService: UsersService) {
   }
 
   /**
@@ -72,9 +74,17 @@ export class AuthController implements IController {
         return;
       }
     }
-    this.authService.register(body).then(result => {
-      reply.send(result);
-    }).catch(error => {
+    this.authService.register(body)
+      .then(result => this.noReplyMailer.createAccountMessage({
+        recipient: body.email,
+        surname: body.surname,
+        name: body.name
+      })
+        .then(() => result))
+      .then(result => {
+
+        reply.send(result);
+      }).catch(error => {
       reply.status(403).send({success: false, message: error.message})
     });
     return;
