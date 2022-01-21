@@ -59,6 +59,7 @@ export class UsersController implements IController {
     }
     const {body} = request;
     const validator = new Ajv();
+    ajvFormats(validator);
     const validate = validator.compile(addCertificateRequest);
     // If there are errors, halt the execution
     if (!validate(body)) {
