@@ -1,6 +1,6 @@
 {
   "name": "tpc-server",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Backend for TPC Application",
   "engines": {
     "node": ">= 17"
@@ -31,7 +31,8 @@
     "build:watch": "tsc -w -p tsconfig.release.json",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "build-start": "npm run build && npm run start"
   },
   "author": "Equipe TPC",
   "license": "Apache-2.0",
